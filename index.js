@@ -1,14 +1,19 @@
 const express = require('express');
 const app = express();
+const bodyParser = require("body-parser");
 const sequelize =require("./database/conexao");
 const alunos=require("./database/alunos");
-//ahhdascaschj
+
 
 sequelize.authenticate().then(function(){
     console.log("Conectou");
 }).catch(error => console.log(error)) ;
 
 app.set('view engine','ejs');
+app.use(express.static('public'));
+//bodyParser
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 
 app.get('/alunos', async (req,res)=>{
@@ -38,9 +43,9 @@ app.get('/alunos/:id', async (req,res)=>{
 app.post('/alunos',async (req,res)=>{
     try {
         await alunos.create({
-            nome:"naelson",
-            cpf:"22323333",
-            endereco:"rua naelson", 
+            nome:req.body.nome,
+            cpf:req.body.cpf,
+            endereco:req.body.endereco, 
         });
         console.log("sucesso");
         res.send("sucesso");    
@@ -48,8 +53,13 @@ app.post('/alunos',async (req,res)=>{
         console.log("deu erro: ",error);
         res.send("deu erro: ",error);
     }
-    
 
+
+});
+
+
+app.get("",async(req,res)=>{
+    res.render("index");
 });
 
 app.delete('/alunos/:id', async (req,res)=>{
@@ -66,7 +76,20 @@ app.delete('/alunos/:id', async (req,res)=>{
     }
 });
 
-app.put('/alunos/:id',function(req,res){
+app.put('/alunos/:id',async (req,res)=>{
+    try {
+        await alunos.update({
+            nome:req.body.nome,
+            cpf:req.body.cpf,
+            endereco:req.body.endereco, 
+        },{where:{id:req.params.id}});
+        console.log("sucesso");
+        res.send("sucesso");    
+    } catch (error) {
+        console.log("deu erro: ",error);
+        res.send("deu erro: ",error);
+    }
+
 
 });
 
