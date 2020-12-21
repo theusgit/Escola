@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const sequelize =require("./database/conexao");
 const alunos=require("./database/alunos");
-
+const alunosRepo = require("./repo/alunos");
 
 sequelize.authenticate().then(function(){
     console.log("Conectou");
@@ -18,8 +18,7 @@ app.use(bodyParser.json());
 
 app.get('/alunos', async (req,res)=>{
     try {
-        const todosOsAlunos = await alunos.findAll();
-        res.send(todosOsAlunos); 
+        res.status(200).send(await alunosRepo.pegarTodos());
     } catch (error) {
         console.log("deu erro",error);
         res.send("deu erro",error);
@@ -29,11 +28,7 @@ app.get('/alunos', async (req,res)=>{
 
 app.get('/alunos/:id', async (req,res)=>{
     try {
-        res.send(await alunos.findOne({
-            where:{
-                id:req.params.id,
-            }
-        }))
+        res.status(200).send(await alunosRepo.pegarPorId(req.params.id));
     } catch (error) {
         console.log("deu erro",error);
         res.send("deu erro",error);
@@ -42,13 +37,11 @@ app.get('/alunos/:id', async (req,res)=>{
 
 app.post('/alunos',async (req,res)=>{
     try {
-        await alunos.create({
-            nome:req.body.nome,
-            cpf:req.body.cpf,
-            endereco:req.body.endereco, 
-        });
-        console.log("sucesso");
-        res.send("sucesso");    
+        res.status(200).send(await alunosRepo.criarNovoAluno(
+            req.body.nome,
+            req.body.cpf,
+            req.body.endereco
+        ));
     } catch (error) {
         console.log("deu erro: ",error);
         res.send("deu erro: ",error);
@@ -64,12 +57,7 @@ app.get("",async(req,res)=>{
 
 app.delete('/alunos/:id', async (req,res)=>{
     try {
-        await alunos.destroy({
-            where:{
-                id:req.params.id
-            }
-        }); 
-        res.sendStatus(200);
+        res.status(200).send(await alunosRepo.deletarAluno(req.params.id))
     } catch (error) {
         console.log("deu erro",error);
         res.send("deu erro",erro);
@@ -78,13 +66,12 @@ app.delete('/alunos/:id', async (req,res)=>{
 
 app.put('/alunos/:id',async (req,res)=>{
     try {
-        await alunos.update({
-            nome:req.body.nome,
-            cpf:req.body.cpf,
-            endereco:req.body.endereco, 
-        },{where:{id:req.params.id}});
-        console.log("sucesso");
-        res.send("sucesso");    
+        res.status(200).send(await alunosRepo.atualizarAluno(
+            req.params.id,
+            req.body.nome,
+            req.body.cpf,
+            req.body.endereco
+        ))
     } catch (error) {
         console.log("deu erro: ",error);
         res.send("deu erro: ",error);
