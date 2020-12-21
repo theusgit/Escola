@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const sequelize =require("./database/conexao");
 const alunos=require("./database/alunos");
-
+//ahhdascaschj
 
 sequelize.authenticate().then(function(){
     console.log("Conectou");
