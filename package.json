@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "coverage": "nyc --reporter=html -e .ts -x \"./spec/**/*.ts \"  npm test",
-    "test": "jasmine-ts ./spec/**/*.ts"
+    "test": "npx jasmine ./spec/**/*.js"
   },
   "author": "",
   "license": "ISC",
